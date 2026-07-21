@@ -155,6 +155,30 @@ type EvidenceEntry = {
   createdAt: string;
 };
 
+type LearnerQuest = {
+  id: string;
+  title: string;
+  project: string;
+  skill: string;
+  duration: string;
+  brief: string;
+  steps: string[];
+  reward: string;
+};
+
+type ReviewPrompt = {
+  title: string;
+  focus: string;
+  prompt: string;
+};
+
+type ScenarioCard = {
+  title: string;
+  role: string;
+  challenge: string;
+  beats: string[];
+};
+
 type QuizQuestion = {
   id: string;
   question: string;
@@ -924,6 +948,147 @@ const resourceShelf: ResourceItem[] = [
   },
 ];
 
+const questDeck: LearnerQuest[] = [
+  {
+    id: "quest-discovery-doorway",
+    title: "Discovery Doorway",
+    project: "P0",
+    skill: "Discovery",
+    duration: "15 min",
+    brief: "Turn a vague request into a clean SAP problem statement with owners, systems and success measures.",
+    steps: [
+      "Write the business outcome in one sentence.",
+      "List the source system, target system and business object.",
+      "Name two exception paths and who owns them.",
+    ],
+    reward: "A stronger project charter opening.",
+  },
+  {
+    id: "quest-payload-detective",
+    title: "Broken Payload Detective",
+    project: "P1",
+    skill: "Mapping",
+    duration: "20 min",
+    brief: "Find three mapping risks before the interface reaches a receiver.",
+    steps: [
+      "Choose one sample payload from the order sandbox.",
+      "Mark one required field, one transformed field and one lookup field.",
+      "Add an edge case for each field.",
+    ],
+    reward: "A sharper mapping note for your portfolio.",
+  },
+  {
+    id: "quest-file-forensics",
+    title: "File Intake Forensics",
+    project: "P2",
+    skill: "Reconciliation",
+    duration: "18 min",
+    brief: "Explain how a file interface proves accepted, rejected and replay-safe work.",
+    steps: [
+      "Run the file intake sandbox with one duplicate row.",
+      "Write the accepted and rejected counts.",
+      "Describe what evidence would prove replay did not duplicate work.",
+    ],
+    reward: "A ready-made demo paragraph.",
+  },
+  {
+    id: "quest-boundary-boss",
+    title: "API Boundary Boss",
+    project: "P3",
+    skill: "Security",
+    duration: "15 min",
+    brief: "Make an API proxy story sound safer and more professional.",
+    steps: [
+      "Name the client key, request path and expected status.",
+      "Test one rejected client and one service outage.",
+      "Write the boundary rule in plain English.",
+    ],
+    reward: "A concise security and error-handling note.",
+  },
+  {
+    id: "quest-event-recovery",
+    title: "Event Recovery Drill",
+    project: "P4",
+    skill: "Operations",
+    duration: "20 min",
+    brief: "Practice explaining an event-driven flow when a subscriber does not acknowledge work.",
+    steps: [
+      "Publish one low-stock event.",
+      "Move it into recovery.",
+      "Write the owner, next action and closure signal.",
+    ],
+    reward: "A practical runbook recovery example.",
+  },
+  {
+    id: "quest-capstone-trailer",
+    title: "Capstone Trailer",
+    project: "P6",
+    skill: "Portfolio",
+    duration: "25 min",
+    brief: "Create a short spoken preview for Quantum Cupcake Creations that makes the project easy to remember.",
+    steps: [
+      "Start with the business problem.",
+      "Name the integration patterns you simulated.",
+      "Close with one piece of evidence a reviewer should inspect.",
+    ],
+    reward: "A two-minute interview-ready project story.",
+  },
+];
+
+const reviewPrompts: ReviewPrompt[] = [
+  {
+    title: "Risk Lens",
+    focus: "Find what could fail quietly.",
+    prompt:
+      "What could go wrong after a retry, duplicate file, missing role, bad lookup or temporary receiver outage?",
+  },
+  {
+    title: "Evidence Lens",
+    focus: "Make proof easy to inspect.",
+    prompt:
+      "Which screenshot, log, count, test result, diagram or short note would prove this work to someone who was not in the room?",
+  },
+  {
+    title: "User Lens",
+    focus: "Connect the build to the person affected.",
+    prompt:
+      "Who benefits from this flow, what delay or error are they avoiding, and what message should they receive when something fails?",
+  },
+  {
+    title: "Runbook Lens",
+    focus: "Think like support.",
+    prompt:
+      "If this breaks on a Friday afternoon, what should support search for, who owns the next action, and when is the issue closed?",
+  },
+];
+
+const scenarioDeck: ScenarioCard[] = [
+  {
+    title: "The Missing Owner",
+    role: "You are clarifying a discovery note with a process lead.",
+    challenge: "The source system sends duplicate orders, but nobody has named the exception owner.",
+    beats: ["State the risk", "Ask for the owner", "Confirm the evidence needed", "Set the next checkpoint"],
+  },
+  {
+    title: "The Timeout After Payment",
+    role: "You are explaining idempotency to a non-technical stakeholder.",
+    challenge: "The customer paid, the request timed out, and the source wants to retry immediately.",
+    beats: ["Explain the duplicate risk", "Name the stable business key", "Describe the safe retry rule", "Close with a test"],
+  },
+  {
+    title: "The Recruiter Demo",
+    role: "You have two minutes to explain your SAP capstone.",
+    challenge: "The listener needs to understand the problem, pattern, evidence and your personal contribution fast.",
+    beats: ["Open with the business problem", "Name the simulated build", "Point to the strongest evidence", "End with the next improvement"],
+  },
+  {
+    title: "The Support Handover",
+    role: "You are handing a finished interface to a support team.",
+    challenge: "They need search keys, common errors, owners, recovery steps and closure rules.",
+    beats: ["Start with impact", "List the search keys", "Name the common failures", "Explain recovery and escalation"],
+  },
+];
+
 const flashcards: Flashcard[] = [
   {
     front: "What are the five questions behind most SAP tasks?",
@@ -1234,6 +1399,10 @@ export default function App() {
   const [progress, setProgress] = useStoredState<Record<string, boolean>>("sea-progress", {});
   const [posts, setPosts] = useStoredState<CommunityPost[]>("sea-posts", starterCommunityPosts);
   const [evidenceVault, setEvidenceVault] = useStoredState<EvidenceEntry[]>("sea-evidence-vault", []);
+  const [activeQuestId, setActiveQuestId] = useStoredState<string>("sea-active-quest", questDeck[0].id);
+  const [completedQuests, setCompletedQuests] = useStoredState<Record<string, boolean>>("sea-completed-quests", {});
+  const [reviewPromptIndex, setReviewPromptIndex] = useStoredState("sea-review-prompt", 0);
+  const [scenarioIndex, setScenarioIndex] = useStoredState("sea-scenario", 0);
   const [quizAnswers, setQuizAnswers] = useStoredState<Record<string, number>>("sea-quiz", {});
   const [selectedProject, setSelectedProject] = useStoredState<string>("sea-project", "P6");
   const [sandbox, setSandbox] = useStoredState<(typeof sandboxTabs)[number]["id"]>("sea-sandbox", "order");
@@ -1319,6 +1488,10 @@ export default function App() {
   const progressPercent = Math.round((completedCount / allProgressIds.length) * 100);
   const chosenProject = projectBriefs.find((project) => project.id === selectedProject) ?? projectBriefs[0];
   const projectEvidence = evidenceVault.filter((entry) => entry.project === selectedProject);
+  const activeQuest = questDeck.find((quest) => quest.id === activeQuestId) ?? questDeck[0];
+  const questDoneCount = questDeck.filter((quest) => completedQuests[quest.id]).length;
+  const reviewPrompt = reviewPrompts[reviewPromptIndex % reviewPrompts.length];
+  const scenario = scenarioDeck[scenarioIndex % scenarioDeck.length];
   const nextOutput = roadmap.flatMap((week) =>
     week.outputs.map((output, index) => ({ id: `${week.id}-${index}`, label: `${week.week}: ${output}` })),
   ).find((item) => !progress[item.id]);
@@ -1531,6 +1704,56 @@ export default function App() {
 
   const removeEvidenceEntry = (entryId: string) => {
     setEvidenceVault((current) => current.filter((entry) => entry.id !== entryId));
+  };
+
+  const toggleQuest = (questId: string) => {
+    setCompletedQuests((current) => ({ ...current, [questId]: !current[questId] }));
+  };
+
+  const rotateQuest = () => {
+    const currentIndex = questDeck.findIndex((quest) => quest.id === activeQuest.id);
+    const nextQuest = questDeck[(currentIndex + 1) % questDeck.length];
+    setActiveQuestId(nextQuest.id);
+  };
+
+  const saveQuestReflection = (quest: LearnerQuest) => {
+    const entry: EvidenceEntry = {
+      id: createId("evidence"),
+      title: `${quest.title} reflection`,
+      project: quest.project,
+      type: "Reflection",
+      link: "",
+      note: `${quest.brief} Steps practised: ${quest.steps.join(" / ")} Reward: ${quest.reward}`,
+      createdAt: new Date().toISOString(),
+    };
+    setEvidenceVault((current) => [entry, ...current]);
+    setEvidenceMessage(`${quest.title} reflection saved.`);
+    setActiveTab("toolkit");
+  };
+
+  const draftReviewPost = () => {
+    setPostDraft((current) => ({
+      ...current,
+      type: "Feedback",
+      mood: "Focused",
+      tags: "peer-review, feedback",
+      message: `${reviewPrompt.title}: ${reviewPrompt.prompt}`,
+    }));
+  };
+
+  const saveScenarioReflection = () => {
+    const entry: EvidenceEntry = {
+      id: createId("evidence"),
+      title: `${scenario.title} speaking drill`,
+      project: "P6",
+      type: "Reflection",
+      link: "",
+      note: `${scenario.role} Challenge: ${scenario.challenge} Response beats: ${scenario.beats.join(" / ")}`,
+      createdAt: new Date().toISOString(),
+    };
+    setEvidenceVault((current) => [entry, ...current]);
+    setEvidenceMessage(`${scenario.title} reflection saved.`);
+    setActiveTab("toolkit");
   };
 
   const exportWorkspace = () => {
@@ -1971,6 +2194,79 @@ export default function App() {
               <strong>{evidenceVault.length}</strong>
               <small>{projectEvidence.length} linked to {selectedProject}</small>
             </div>
+            <section className="panel wide quest-deck">
+              <div className="section-heading">
+                <div>
+                  <p className="eyebrow">Quest Deck</p>
+                  <h2>Short creative drills for real SAP confidence.</h2>
+                </div>
+                <button className="icon-button" onClick={rotateQuest} type="button" aria-label="Rotate quest">
+                  <RefreshCw size={18} />
+                </button>
+              </div>
+              <div className="quest-layout">
+                <article className="quest-feature">
+                  <div className="post-meta">
+                    <span>{activeQuest.project}</span>
+                    <span>{activeQuest.skill}</span>
+                    <span>{activeQuest.duration}</span>
+                    <span>{completedQuests[activeQuest.id] ? "Complete" : "Open"}</span>
+                  </div>
+                  <h3>{activeQuest.title}</h3>
+                  <p>{activeQuest.brief}</p>
+                  <ol className="compact-list">
+                    {activeQuest.steps.map((step) => (
+                      <li key={step}>{step}</li>
+                    ))}
+                  </ol>
+                  <div className="quest-reward">
+                    <Sparkles size={18} />
+                    <span>{activeQuest.reward}</span>
+                  </div>
+                  <div className="button-row">
+                    <button className="primary-action" onClick={() => toggleQuest(activeQuest.id)} type="button">
+                      <BadgeCheck size={18} />
+                      {completedQuests[activeQuest.id] ? "Reopen quest" : "Mark complete"}
+                    </button>
+                    <button className="secondary-action" onClick={() => saveQuestReflection(activeQuest)} type="button">
+                      <Archive size={18} />
+                      Save reflection
+                    </button>
+                    <button
+                      className="ghost-button"
+                      onClick={() => {
+                        setSelectedProject(activeQuest.project);
+                        setActiveTab("projects");
+                      }}
+                      type="button"
+                    >
+                      <Rocket size={18} />
+                      Open brief
+                    </button>
+                  </div>
+                </article>
+                <div className="quest-picker">
+                  <div>
+                    <span>Quest progress</span>
+                    <strong>
+                      {questDoneCount}/{questDeck.length}
+                    </strong>
+                  </div>
+                  {questDeck.map((quest) => (
+                    <button
+                      className={quest.id === activeQuest.id ? "selected" : ""}
+                      key={quest.id}
+                      onClick={() => setActiveQuestId(quest.id)}
+                      type="button"
+                    >
+                      <span>{quest.project}</span>
+                      <strong>{quest.title}</strong>
+                      <small>{completedQuests[quest.id] ? "Completed" : quest.skill}</small>
+                    </button>
+                  ))}
+                </div>
+              </div>
+            </section>
 
             <section className="panel wide">
               <div className="section-heading">
@@ -2504,6 +2800,31 @@ export default function App() {
                 <strong>{communityBlockers}</strong>
               </div>
             </div>
+            <section className="review-studio">
+              <div className="section-heading">
+                <div>
+                  <p className="eyebrow">Peer Review Studio</p>
+                  <h2>{reviewPrompt.title}</h2>
+                </div>
+                <MessageSquare size={20} />
+              </div>
+              <p className="review-focus">{reviewPrompt.focus}</p>
+              <p>{reviewPrompt.prompt}</p>
+              <div className="button-row">
+                <button
+                  className="primary-action"
+                  onClick={() => setReviewPromptIndex((reviewPromptIndex + 1) % reviewPrompts.length)}
+                  type="button"
+                >
+                  <RefreshCw size={18} />
+                  New lens
+                </button>
+                <button className="secondary-action" onClick={draftReviewPost} type="button">
+                  <MessageSquarePlus size={18} />
+                  Draft post
+                </button>
+              </div>
+            </section>
             <section className="composer">
               <div className="composer-head">
                 {profile ? (
@@ -2859,6 +3180,38 @@ export default function App() {
               <p className="eyebrow">Study bank</p>
               <h1>Flashcards, interview drills and knowledge checks.</h1>
             </div>
+            <section className="scenario-arena">
+              <div className="section-heading">
+                <div>
+                  <p className="eyebrow">Scenario Spinner</p>
+                  <h2>{scenario.title}</h2>
+                </div>
+                <Sparkles size={20} />
+              </div>
+              <p className="scenario-role">{scenario.role}</p>
+              <p>{scenario.challenge}</p>
+              <div className="scenario-beats">
+                {scenario.beats.map((beat, index) => (
+                  <span key={beat}>
+                    {index + 1}. {beat}
+                  </span>
+                ))}
+              </div>
+              <div className="button-row">
+                <button
+                  className="primary-action"
+                  onClick={() => setScenarioIndex((scenarioIndex + 1) % scenarioDeck.length)}
+                  type="button"
+                >
+                  <RefreshCw size={18} />
+                  New scenario
+                </button>
+                <button className="secondary-action" onClick={saveScenarioReflection} type="button">
+                  <Archive size={18} />
+                  Save reflection
+                </button>
+              </div>
+            </section>
             <section className="flashcard">
               <p className="eyebrow">Flashcard {flashIndex + 1} of {flashcards.length}</p>
               <h2>{flashcards[flashIndex].front}</h2>
