@@ -365,7 +365,7 @@ const projectBriefs: ProjectBrief[] = [
     title: "Tenant-free Integration Discovery Sprint",
     level: "Foundation",
     time: "1-2 days",
-    outcome: "Produce a complete integration design with generated data and public tools.",
+    outcome: "Produce a complete integration design with sample data and public tools.",
     brief:
       "A small organisation manually copies online order data into an ERP-like system. Before tenant access arrives, the team must prove the process, risks and contract.",
     sequence: [
@@ -515,7 +515,7 @@ const projectBriefs: ProjectBrief[] = [
       "Inventory drops below a threshold and purchasing plus reporting must react independently without repeated actions.",
     sequence: [
       "Define the event, producer, consumers, topic and minimal schema.",
-      "Publish generated low-stock events and route to separate queues.",
+      "Publish sample low-stock events and route to separate queues.",
       "Implement or simulate notification and audit consumers.",
       "Use event ID plus business key for duplicate handling.",
       "Define acknowledgement, retry, recovery and ownership.",
@@ -588,7 +588,7 @@ const projectBriefs: ProjectBrief[] = [
     sequence: [
       "Define personas and channels, then choose one minimum viable channel.",
       "Model quote-to-order-to-fulfilment-to-invoice status.",
-      "Create product, customer and order canonical models with generated South African data.",
+      "Create product, customer and order canonical models with fictional South African data.",
       "Build or simulate inbound Order API to validation, mapping and ERP mock.",
       "Publish or simulate order events and expose a safe status endpoint.",
       "Add reconciliation, duplicate control, monitoring, runbook and business-value dashboard.",
@@ -598,7 +598,7 @@ const projectBriefs: ProjectBrief[] = [
       "One source order creates one internal order.",
       "Bulk and custom price rules trace to decisions.",
       "Status changes are observable without backend exposure.",
-      "Generated data only.",
+      "Fictional sample data only.",
       "End-to-end, failure and recovery tests pass.",
       "Public case study labels simulation and contribution clearly.",
     ],
@@ -741,7 +741,7 @@ const flashcards: Flashcard[] = [
   },
   {
     front: "What makes an integration design credible before tenant access?",
-    back: "Discovery notes, process maps, generated data, contracts, mappings, tests, assumptions, diagrams and a clear simulation label.",
+    back: "Discovery notes, process maps, sample data, contracts, mappings, tests, assumptions, diagrams and a clear simulation label.",
   },
   {
     front: "Why use a correlation ID?",
@@ -805,7 +805,7 @@ const quizQuestions: QuizQuestion[] = [
     question: "What is the safest public portfolio data?",
     options: [
       "Production customer records",
-      "Generated and clearly labelled sample data",
+      "Fictional and clearly labelled sample data",
       "Access tokens",
       "Private tenant screenshots",
     ],
@@ -887,7 +887,7 @@ const readinessItems = [
   "SAP Universal ID and learning access confirmed",
   "Programme calendar and reminders set",
   "Evidence folder and backup created",
-  "Generated data set ready",
+  "Sample data set ready",
   "Portfolio case-study outline opened",
   "Blocker update template saved",
   "Demo script outline prepared",
