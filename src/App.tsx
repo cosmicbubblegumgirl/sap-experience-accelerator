@@ -1,5 +1,6 @@
 import {
   Activity,
+  Archive,
   BadgeCheck,
   BookOpen,
   BriefcaseBusiness,
@@ -17,6 +18,7 @@ import {
   MessageSquare,
   MessageSquarePlus,
   Play,
+  Plus,
   RefreshCw,
   Rocket,
   Send,
@@ -24,6 +26,7 @@ import {
   Sparkles,
   Star,
   TimerReset,
+  Trash2,
   Upload,
   UserPlus,
   UserRound,
@@ -134,6 +137,24 @@ type Template = {
   fields: string[];
 };
 
+type ResourceItem = {
+  title: string;
+  category: string;
+  use: string;
+  action: string;
+  project: string;
+};
+
+type EvidenceEntry = {
+  id: string;
+  title: string;
+  project: string;
+  type: string;
+  link: string;
+  note: string;
+  createdAt: string;
+};
+
 type QuizQuestion = {
   id: string;
   question: string;
@@ -223,6 +244,130 @@ const avatarPresets = [
     id: "graphite",
     label: "Graphite",
     value: "linear-gradient(135deg, #172124, #55636f 52%, #f0b35d)",
+  },
+];
+
+const starterCommunityPosts: CommunityPost[] = [
+  {
+    id: "starter-post-discovery",
+    author: "Lerato M.",
+    role: "Integration Suite Learner",
+    avatar: avatarPresets[1].value,
+    avatarKind: "preset",
+    type: "Blocker",
+    week: "Week 2",
+    project: "P0",
+    mood: "Need review",
+    confidence: 2,
+    message:
+      "My discovery pack improved once I wrote the business outcome before drawing the flow. I still need a clearer exception owner for duplicate orders.",
+    tags: "discovery, duplicates, p0",
+    link: "",
+    createdAt: "2026-07-22T07:30:00.000Z",
+    comments: [
+      {
+        id: "starter-comment-discovery-1",
+        author: "Mila R.",
+        role: "SAP BTP Associate",
+        avatar: avatarPresets[2].value,
+        avatarKind: "preset",
+        message: "Add the owner beside each recovery path and connect it to one test case. That should make the pack review-ready.",
+        createdAt: "2026-07-22T08:05:00.000Z",
+      },
+    ],
+  },
+  {
+    id: "starter-post-file",
+    author: "Anele K.",
+    role: "SAP Developer Learner",
+    avatar: avatarPresets[4].value,
+    avatarKind: "preset",
+    type: "Win",
+    week: "Week 4",
+    project: "P2",
+    mood: "Confident",
+    confidence: 4,
+    message:
+      "The file intake sandbox helped me explain reconciliation without tenant screenshots. Accepted, rejected and replay counts finally tell a clean story.",
+    tags: "file-intake, reconciliation, demo",
+    link: "",
+    createdAt: "2026-07-21T14:18:00.000Z",
+    comments: [
+      {
+        id: "starter-comment-file-1",
+        author: "Thabo N.",
+        role: "Portfolio Builder",
+        avatar: avatarPresets[5].value,
+        avatarKind: "preset",
+        message: "Try adding one rejected row to the demo script so reviewers can see the control working.",
+        createdAt: "2026-07-21T15:02:00.000Z",
+      },
+      {
+        id: "starter-comment-file-2",
+        author: "Noor P.",
+        role: "Process Automation Learner",
+        avatar: avatarPresets[3].value,
+        avatarKind: "preset",
+        message: "The duplicate PO check is a strong portfolio detail. Keep the before and after payloads together.",
+        createdAt: "2026-07-21T15:44:00.000Z",
+      },
+    ],
+  },
+  {
+    id: "starter-post-event",
+    author: "Mila R.",
+    role: "SAP BTP Associate",
+    avatar: avatarPresets[2].value,
+    avatarKind: "preset",
+    type: "Resource",
+    week: "Week 6",
+    project: "P4",
+    mood: "Curious",
+    confidence: 3,
+    message:
+      "For event-driven designs, I am saving one diagram that shows publish, queue, subscriber acknowledgement and recovery. It makes async choices easier to defend.",
+    tags: "events, async, runbook",
+    link: "",
+    createdAt: "2026-07-20T11:12:00.000Z",
+    comments: [
+      {
+        id: "starter-comment-event-1",
+        author: "Anele K.",
+        role: "SAP Developer Learner",
+        avatar: avatarPresets[4].value,
+        avatarKind: "preset",
+        message: "Also note which failures are retryable. That part helped my runbook sound practical.",
+        createdAt: "2026-07-20T11:45:00.000Z",
+      },
+    ],
+  },
+  {
+    id: "starter-post-portfolio",
+    author: "Noor P.",
+    role: "Process Automation Learner",
+    avatar: avatarPresets[3].value,
+    avatarKind: "preset",
+    type: "Retrospective",
+    week: "Week 8",
+    project: "P6",
+    mood: "Focused",
+    confidence: 4,
+    message:
+      "My strongest case-study paragraph starts with the operational problem, then shows the smallest slice I could prove. It reads better than a long feature list.",
+    tags: "portfolio, storytelling, qcc",
+    link: "",
+    createdAt: "2026-07-19T09:40:00.000Z",
+    comments: [
+      {
+        id: "starter-comment-portfolio-1",
+        author: "Lerato M.",
+        role: "Integration Suite Learner",
+        avatar: avatarPresets[1].value,
+        avatarKind: "preset",
+        message: "That structure is useful. I am going to try problem, design choice, evidence, trade-off, next step.",
+        createdAt: "2026-07-19T10:12:00.000Z",
+      },
+    ],
   },
 ];
 
@@ -734,6 +879,51 @@ const templates: Template[] = [
   },
 ];
 
+const resourceShelf: ResourceItem[] = [
+  {
+    title: "Discovery question bank",
+    category: "Discovery",
+    use: "Use it before interviews to uncover outcomes, owners, systems, data rules and exception paths.",
+    action: "Turn the top five answers into traceable acceptance criteria.",
+    project: "P0",
+  },
+  {
+    title: "API contract checklist",
+    category: "Integration",
+    use: "Use it to compare request, response, authentication, rate limits, error envelopes and versioning decisions.",
+    action: "Save one contract note before building the API proxy sandbox.",
+    project: "P3",
+  },
+  {
+    title: "Mapping edge-case pack",
+    category: "Data",
+    use: "Use it to test empty values, duplicates, date formats, currency, unknown codes and field length limits.",
+    action: "Add at least three edge cases to the test case sheet.",
+    project: "P1",
+  },
+  {
+    title: "Runbook review prompts",
+    category: "Operations",
+    use: "Use it to check owners, support hours, search keys, dashboards, alerts, recovery and closure rules.",
+    action: "Write one support handover paragraph after the demo script.",
+    project: "P5",
+  },
+  {
+    title: "Interview story frame",
+    category: "Career",
+    use: "Use it to answer with context, action, trade-off, evidence and result.",
+    action: "Draft a two-minute story for the QCC capstone.",
+    project: "P6",
+  },
+  {
+    title: "No-tenant build path",
+    category: "Practice",
+    use: "Use it when access is limited: simulate inputs, contracts, errors, monitoring notes and portfolio evidence.",
+    action: "Label every simulated artefact clearly and connect it to a real SAP concept.",
+    project: "P6",
+  },
+];
+
 const flashcards: Flashcard[] = [
   {
     front: "What are the five questions behind most SAP tasks?",
@@ -1042,7 +1232,8 @@ export default function App() {
   const [profile, setProfile] = useStoredState<Profile | null>("sea-profile", null);
   const [accounts, setAccounts] = useStoredState<LocalAccount[]>("sea-accounts", []);
   const [progress, setProgress] = useStoredState<Record<string, boolean>>("sea-progress", {});
-  const [posts, setPosts] = useStoredState<CommunityPost[]>("sea-posts", []);
+  const [posts, setPosts] = useStoredState<CommunityPost[]>("sea-posts", starterCommunityPosts);
+  const [evidenceVault, setEvidenceVault] = useStoredState<EvidenceEntry[]>("sea-evidence-vault", []);
   const [quizAnswers, setQuizAnswers] = useStoredState<Record<string, number>>("sea-quiz", {});
   const [selectedProject, setSelectedProject] = useStoredState<string>("sea-project", "P6");
   const [sandbox, setSandbox] = useStoredState<(typeof sandboxTabs)[number]["id"]>("sea-sandbox", "order");
@@ -1074,6 +1265,14 @@ export default function App() {
     link: "",
     attachment: undefined as Attachment | undefined,
   });
+  const [evidenceDraft, setEvidenceDraft] = useState({
+    title: "",
+    project: "P6",
+    type: "Demo",
+    link: "",
+    note: "",
+  });
+  const [evidenceMessage, setEvidenceMessage] = useState("");
   const [commentDrafts, setCommentDrafts] = useState<Record<string, string>>({});
   const [flashIndex, setFlashIndex] = useStoredState("sea-flash-index", 0);
   const [flashOpen, setFlashOpen] = useState(false);
@@ -1119,6 +1318,7 @@ export default function App() {
   const completedCount = allProgressIds.filter((id) => progress[id]).length;
   const progressPercent = Math.round((completedCount / allProgressIds.length) * 100);
   const chosenProject = projectBriefs.find((project) => project.id === selectedProject) ?? projectBriefs[0];
+  const projectEvidence = evidenceVault.filter((entry) => entry.project === selectedProject);
   const nextOutput = roadmap.flatMap((week) =>
     week.outputs.map((output, index) => ({ id: `${week.id}-${index}`, label: `${week.week}: ${output}` })),
   ).find((item) => !progress[item.id]);
@@ -1126,6 +1326,9 @@ export default function App() {
   const sprintRemaining = sprint.active
     ? Math.max(0, sprint.duration - Math.floor((clock - sprint.startedAt) / 1000))
     : sprint.duration;
+  const communityCommentCount = posts.reduce((total, post) => total + post.comments.length, 0);
+  const communityWins = posts.filter((post) => post.type === "Win").length;
+  const communityBlockers = posts.filter((post) => post.type === "Blocker").length;
 
   useEffect(() => {
     if (!sprint.active) return;
@@ -1142,6 +1345,12 @@ export default function App() {
       }));
     }
   }, [setSprint, sprint.active, sprintRemaining]);
+
+  useEffect(() => {
+    if (profile && posts.length === 0) {
+      setPosts(starterCommunityPosts);
+    }
+  }, [posts.length, profile, setPosts]);
 
   const toggleProgress = (id: string) => {
     setProgress((current) => ({ ...current, [id]: !current[id] }));
@@ -1284,6 +1493,66 @@ export default function App() {
       current.map((post) => (post.id === postId ? { ...post, comments: [...post.comments, comment] } : post)),
     );
     setCommentDrafts((current) => ({ ...current, [postId]: "" }));
+  };
+
+  const addEvidenceEntry = () => {
+    const title = evidenceDraft.title.trim();
+    const link = evidenceDraft.link.trim();
+    const note = evidenceDraft.note.trim();
+
+    if (!title) {
+      setEvidenceMessage("Add a short title before saving evidence.");
+      return;
+    }
+    if (!link && !note) {
+      setEvidenceMessage("Add a link or note before saving evidence.");
+      return;
+    }
+
+    const entry: EvidenceEntry = {
+      id: createId("evidence"),
+      title,
+      project: evidenceDraft.project,
+      type: evidenceDraft.type,
+      link,
+      note,
+      createdAt: new Date().toISOString(),
+    };
+
+    setEvidenceVault((current) => [entry, ...current]);
+    setEvidenceDraft((current) => ({
+      ...current,
+      title: "",
+      link: "",
+      note: "",
+    }));
+    setEvidenceMessage("Evidence saved.");
+  };
+
+  const removeEvidenceEntry = (entryId: string) => {
+    setEvidenceVault((current) => current.filter((entry) => entry.id !== entryId));
+  };
+
+  const exportWorkspace = () => {
+    const payload = {
+      profile,
+      progress,
+      posts,
+      evidenceVault,
+      quizAnswers,
+      selectedProject,
+      sprintCompletions: sprint.completions,
+      exportedAt: new Date().toISOString(),
+    };
+    const blob = new Blob([JSON.stringify(payload, null, 2)], { type: "application/json" });
+    const url = URL.createObjectURL(blob);
+    const anchor = document.createElement("a");
+    anchor.href = url;
+    anchor.download = "sapling-studio-workspace.json";
+    document.body.appendChild(anchor);
+    anchor.click();
+    anchor.remove();
+    URL.revokeObjectURL(url);
   };
 
   const startSprint = () => {
@@ -1696,6 +1965,12 @@ export default function App() {
               </strong>
               <small>Answered correctly</small>
             </div>
+            <div className="metric-card">
+              <Archive size={22} />
+              <span>Saved Evidence</span>
+              <strong>{evidenceVault.length}</strong>
+              <small>{projectEvidence.length} linked to {selectedProject}</small>
+            </div>
 
             <section className="panel wide">
               <div className="section-heading">
@@ -1733,6 +2008,38 @@ export default function App() {
               <button className="secondary-action stretch" onClick={() => setActiveTab("projects")} type="button">
                 <BriefcaseBusiness size={18} />
                 View brief
+              </button>
+            </section>
+
+            <section className="panel">
+              <div className="section-heading">
+                <div>
+                  <p className="eyebrow">Evidence Vault</p>
+                  <h2>{selectedProject} proof pack</h2>
+                </div>
+                <Archive size={20} />
+              </div>
+              <div className="vault-mini-list">
+                {projectEvidence.length === 0 && <p>No evidence saved for this project yet.</p>}
+                {projectEvidence.slice(0, 3).map((entry) => (
+                  <div className="vault-mini-item" key={entry.id}>
+                    <strong>{entry.title}</strong>
+                    <span>
+                      {entry.type} / {formatDate(entry.createdAt)}
+                    </span>
+                  </div>
+                ))}
+              </div>
+              <button
+                className="secondary-action stretch"
+                onClick={() => {
+                  setEvidenceDraft((current) => ({ ...current, project: selectedProject }));
+                  setActiveTab("toolkit");
+                }}
+                type="button"
+              >
+                <Plus size={18} />
+                Add evidence
               </button>
             </section>
 
@@ -2179,6 +2486,24 @@ export default function App() {
               <p className="eyebrow">Learner community</p>
               <h1>Feedback wall, comments and cohort reflections.</h1>
             </div>
+            <div className="community-pulse">
+              <div>
+                <span>Posts</span>
+                <strong>{posts.length}</strong>
+              </div>
+              <div>
+                <span>Comments</span>
+                <strong>{communityCommentCount}</strong>
+              </div>
+              <div>
+                <span>Wins</span>
+                <strong>{communityWins}</strong>
+              </div>
+              <div>
+                <span>Blockers</span>
+                <strong>{communityBlockers}</strong>
+              </div>
+            </div>
             <section className="composer">
               <div className="composer-head">
                 {profile ? (
@@ -2371,6 +2696,142 @@ export default function App() {
             <div className="page-title">
               <p className="eyebrow">Workbook templates</p>
               <h1>Reusable artefacts for delivery evidence.</h1>
+            </div>
+            <div className="toolkit-feature-grid">
+              <section className="vault-panel">
+                <div className="section-heading">
+                  <div>
+                    <p className="eyebrow">Evidence Vault</p>
+                    <h2>Save proof as you build.</h2>
+                  </div>
+                  <button className="icon-button" onClick={exportWorkspace} type="button" aria-label="Export workspace">
+                    <Archive size={18} />
+                  </button>
+                </div>
+                <div className="form-grid vault-form">
+                  <label>
+                    Title
+                    <input
+                      placeholder="Demo recording, test run, diagram"
+                      value={evidenceDraft.title}
+                      onChange={(event) => setEvidenceDraft((current) => ({ ...current, title: event.target.value }))}
+                    />
+                  </label>
+                  <label>
+                    Project
+                    <select
+                      value={evidenceDraft.project}
+                      onChange={(event) => setEvidenceDraft((current) => ({ ...current, project: event.target.value }))}
+                    >
+                      {projectBriefs.map((project) => (
+                        <option key={project.id}>{project.id}</option>
+                      ))}
+                    </select>
+                  </label>
+                  <label>
+                    Type
+                    <select
+                      value={evidenceDraft.type}
+                      onChange={(event) => setEvidenceDraft((current) => ({ ...current, type: event.target.value }))}
+                    >
+                      <option>Demo</option>
+                      <option>Test Evidence</option>
+                      <option>Diagram</option>
+                      <option>Runbook</option>
+                      <option>Portfolio Note</option>
+                      <option>Reflection</option>
+                    </select>
+                  </label>
+                </div>
+                <label className="full-field">
+                  Evidence link
+                  <input
+                    placeholder="https://"
+                    value={evidenceDraft.link}
+                    onChange={(event) => setEvidenceDraft((current) => ({ ...current, link: event.target.value }))}
+                  />
+                </label>
+                <label className="full-field">
+                  Note
+                  <textarea
+                    placeholder="What does this prove and what should a reviewer notice?"
+                    value={evidenceDraft.note}
+                    onChange={(event) => setEvidenceDraft((current) => ({ ...current, note: event.target.value }))}
+                  />
+                </label>
+                {evidenceMessage && <p className="evidence-message">{evidenceMessage}</p>}
+                <div className="button-row">
+                  <button className="primary-action" onClick={addEvidenceEntry} type="button">
+                    <Plus size={18} />
+                    Save evidence
+                  </button>
+                  <button className="secondary-action" onClick={exportWorkspace} type="button">
+                    <Archive size={18} />
+                    Export workspace
+                  </button>
+                </div>
+                <div className="vault-list">
+                  {evidenceVault.length === 0 && (
+                    <div className="empty-state compact">
+                      <Archive size={24} />
+                      <h3>No saved evidence yet</h3>
+                      <p>Add a link or note from a demo, test, diagram, runbook or reflection.</p>
+                    </div>
+                  )}
+                  {evidenceVault.map((entry) => (
+                    <article className="vault-entry" key={entry.id}>
+                      <div>
+                        <span>
+                          {entry.project} / {entry.type} / {formatDate(entry.createdAt)}
+                        </span>
+                        <h3>{entry.title}</h3>
+                        {entry.note && <p>{entry.note}</p>}
+                        {entry.link && (
+                          <a className="post-link" href={entry.link} rel="noreferrer" target="_blank">
+                            {entry.link}
+                          </a>
+                        )}
+                      </div>
+                      <button className="icon-button" onClick={() => removeEvidenceEntry(entry.id)} type="button" aria-label="Remove evidence">
+                        <Trash2 size={18} />
+                      </button>
+                    </article>
+                  ))}
+                </div>
+              </section>
+
+              <section className="resource-panel">
+                <div className="section-heading">
+                  <div>
+                    <p className="eyebrow">Resource Shelf</p>
+                    <h2>Prompts for stronger learner evidence.</h2>
+                  </div>
+                  <BookOpen size={20} />
+                </div>
+                <div className="resource-list">
+                  {resourceShelf.map((resource) => (
+                    <article className="resource-item" key={resource.title}>
+                      <span>
+                        {resource.category} / {resource.project}
+                      </span>
+                      <h3>{resource.title}</h3>
+                      <p>{resource.use}</p>
+                      <strong>{resource.action}</strong>
+                      <button
+                        className="secondary-action stretch"
+                        onClick={() => {
+                          setSelectedProject(resource.project);
+                          setActiveTab("projects");
+                        }}
+                        type="button"
+                      >
+                        <Rocket size={18} />
+                        Open project
+                      </button>
+                    </article>
+                  ))}
+                </div>
+              </section>
             </div>
             <div className="template-grid">
               {templates.map((template) => (

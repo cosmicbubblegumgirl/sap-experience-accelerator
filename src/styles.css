@@ -279,7 +279,9 @@ main {
 .template-card,
 .flashcard,
 .quiz-card,
-.post-card {
+.post-card,
+.vault-panel,
+.resource-panel {
   background: rgba(255, 255, 255, 0.92);
   border: 1px solid rgba(219, 228, 223, 0.9);
   border-radius: 8px;
@@ -1058,6 +1060,126 @@ th {
   justify-content: center;
 }
 
+.community-pulse {
+  display: grid;
+  gap: 10px;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+}
+
+.community-pulse div {
+  background: rgba(255, 255, 255, 0.92);
+  border: 1px solid rgba(219, 228, 223, 0.9);
+  border-radius: 8px;
+  box-shadow: var(--shadow);
+  display: grid;
+  gap: 6px;
+  padding: 16px;
+}
+
+.community-pulse span,
+.vault-mini-item span,
+.vault-entry span,
+.resource-item span {
+  color: var(--muted);
+  font-size: 0.82rem;
+  font-weight: 800;
+}
+
+.community-pulse strong {
+  color: var(--ink);
+  font-size: 2rem;
+  line-height: 1;
+}
+
+.vault-mini-list {
+  display: grid;
+  gap: 10px;
+  margin: 14px 0;
+}
+
+.vault-mini-list p {
+  margin: 0;
+}
+
+.vault-mini-item {
+  background: #f8fbf9;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  display: grid;
+  gap: 4px;
+  padding: 10px;
+}
+
+.toolkit-feature-grid {
+  display: grid;
+  gap: 16px;
+  grid-template-columns: minmax(0, 1.25fr) minmax(320px, 0.75fr);
+}
+
+.vault-panel,
+.resource-panel {
+  display: grid;
+  gap: 14px;
+  padding: 18px;
+}
+
+.vault-form {
+  margin-top: 4px;
+}
+
+.evidence-message {
+  background: #f4faf8;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  color: var(--mint-dark);
+  font-weight: 850;
+  margin: 0;
+  padding: 10px 12px;
+}
+
+.vault-list,
+.resource-list {
+  display: grid;
+  gap: 10px;
+}
+
+.vault-entry,
+.resource-item {
+  background: #f8fbf9;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  display: grid;
+  gap: 10px;
+  padding: 12px;
+}
+
+.vault-entry {
+  align-items: flex-start;
+  grid-template-columns: minmax(0, 1fr) 42px;
+}
+
+.vault-entry h3,
+.resource-item h3,
+.empty-state h3 {
+  margin: 0;
+}
+
+.vault-entry p,
+.resource-item p {
+  color: #40504e;
+  line-height: 1.6;
+  margin: 8px 0;
+}
+
+.resource-item strong {
+  color: var(--mint-dark);
+  line-height: 1.45;
+}
+
+.empty-state.compact {
+  padding: 18px;
+}
+
 .template-grid,
 .quiz-grid {
   display: grid;
@@ -1158,7 +1280,8 @@ footer a {
   .dashboard-grid,
   .roadmap-grid,
   .template-grid,
-  .quiz-grid {
+  .quiz-grid,
+  .toolkit-feature-grid {
     grid-template-columns: repeat(2, minmax(0, 1fr));
   }
 
@@ -1187,11 +1310,20 @@ footer a {
   .detail-grid,
   .template-grid,
   .quiz-grid,
+  .toolkit-feature-grid,
   .form-grid,
   .readiness-list,
   .code-grid,
   .recon-grid,
   .queue-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .community-pulse {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .vault-entry {
     grid-template-columns: 1fr;
   }
 
