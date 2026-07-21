@@ -12,6 +12,8 @@ import {
   ImagePlus,
   Layers3,
   LayoutDashboard,
+  LogIn,
+  LogOut,
   MessageSquare,
   MessageSquarePlus,
   Play,
@@ -23,6 +25,7 @@ import {
   Star,
   TimerReset,
   Upload,
+  UserPlus,
   UserRound,
   UsersRound,
   Zap,
@@ -60,6 +63,13 @@ type Profile = {
   avatarKind: AvatarKind;
   joinedAt: string;
 };
+
+type LocalAccount = Profile & {
+  accessCode: string;
+  updatedAt: string;
+};
+
+type AuthMode = "login" | "create";
 
 type Attachment = {
   name: string;
@@ -1030,6 +1040,7 @@ function Avatar({
 export default function App() {
   const [activeTab, setActiveTab] = useStoredState<TabId>("sea-tab", "dashboard");
   const [profile, setProfile] = useStoredState<Profile | null>("sea-profile", null);
+  const [accounts, setAccounts] = useStoredState<LocalAccount[]>("sea-accounts", []);
   const [progress, setProgress] = useStoredState<Record<string, boolean>>("sea-progress", {});
   const [posts, setPosts] = useStoredState<CommunityPost[]>("sea-posts", []);
   const [quizAnswers, setQuizAnswers] = useStoredState<Record<string, number>>("sea-quiz", {});
@@ -1042,11 +1053,15 @@ export default function App() {
     completions: 0,
   });
   const [clock, setClock] = useState(Date.now());
+  const [authMode, setAuthMode] = useState<AuthMode>("login");
+  const [authMessage, setAuthMessage] = useState("");
   const [profileDraft, setProfileDraft] = useState({
-    username: profile?.username ?? "Simone Govender",
+    username: "",
     role: profile?.role ?? "SAP Developer Learner",
+    accessCode: "",
+    confirmCode: "",
     avatar: profile?.avatar ?? avatarPresets[0].value,
-    avatarKind: profile?.avatarKind ?? "preset",
+    avatarKind: (profile?.avatarKind ?? "preset") as AvatarKind,
   });
   const [postDraft, setPostDraft] = useState({
     type: "Feedback",
@@ -1132,15 +1147,76 @@ export default function App() {
     setProgress((current) => ({ ...current, [id]: !current[id] }));
   };
 
-  const saveProfile = () => {
-    setProfile(
-      profileFromDraft(
-        profileDraft.username,
-        profileDraft.role,
-        profileDraft.avatar,
-        profileDraft.avatarKind as AvatarKind,
-      ),
+  const createAccount = () => {
+    const username = profileDraft.username.trim();
+    const accessCode = profileDraft.accessCode.trim();
+
+    if (!username) {
+      setAuthMessage("Choose a username to create your account.");
+      return;
+    }
+    if (accessCode.length < 4) {
+      setAuthMessage("Use an access code with at least four characters.");
+      return;
+    }
+    if (accessCode !== profileDraft.confirmCode.trim()) {
+      setAuthMessage("The access codes do not match.");
+      return;
+    }
+    if (accounts.some((account) => account.username.toLowerCase() === username.toLowerCase())) {
+      setAuthMessage("That username already exists on this device. Log in instead.");
+      setAuthMode("login");
+      return;
+    }
+
+    const newProfile = profileFromDraft(username, profileDraft.role, profileDraft.avatar, profileDraft.avatarKind);
+    const account: LocalAccount = {
+      ...newProfile,
+      accessCode,
+      updatedAt: new Date().toISOString(),
+    };
+    setAccounts((current) => [account, ...current]);
+    setProfile(newProfile);
+    setAuthMessage("");
+    setActiveTab("dashboard");
+  };
+
+  const loginAccount = () => {
+    const username = profileDraft.username.trim();
+    const accessCode = profileDraft.accessCode.trim();
+    const account = accounts.find(
+      (item) => item.username.toLowerCase() === username.toLowerCase() && item.accessCode === accessCode,
     );
+
+    if (!account) {
+      setAuthMessage("Account not found on this device. Check your details or create an account.");
+      return;
+    }
+
+    const { accessCode: _accessCode, updatedAt: _updatedAt, ...storedProfile } = account;
+    setProfile(storedProfile);
+    setProfileDraft((current) => ({
+      ...current,
+      username: "",
+      accessCode: "",
+      confirmCode: "",
+      role: storedProfile.role,
+      avatar: storedProfile.avatar,
+      avatarKind: storedProfile.avatarKind,
+    }));
+    setAuthMessage("");
+    setActiveTab("dashboard");
+  };
+
+  const signOut = () => {
+    setProfile(null);
+    setAuthMode("login");
+    setProfileDraft((current) => ({
+      ...current,
+      username: "",
+      accessCode: "",
+      confirmCode: "",
+    }));
   };
 
   const handleAvatarUpload = (event: ChangeEvent<HTMLInputElement>) => {
@@ -1385,7 +1461,11 @@ export default function App() {
   return (
     <div className="app-shell">
       <header className="topbar">
-        <button className="brand" onClick={() => setActiveTab("dashboard")} type="button">
+        <button
+          className="brand"
+          onClick={() => (profile ? setActiveTab("dashboard") : setAuthMode("login"))}
+          type="button"
+        >
           <img src={`${baseUrl}qcc-quantum-cupcake.png`} alt="Quantum Cupcake Creations mark" />
           <span>
             <strong>SAP Experience Accelerator</strong>
@@ -1397,7 +1477,8 @@ export default function App() {
             const Icon = item.icon;
             return (
               <button
-                className={activeTab === item.id ? "active" : ""}
+                className={profile && activeTab === item.id ? "active" : ""}
+                disabled={!profile}
                 key={item.id}
                 onClick={() => setActiveTab(item.id)}
                 type="button"
@@ -1408,16 +1489,40 @@ export default function App() {
             );
           })}
         </nav>
-        <div className="profile-pill">
+        <div className={profile ? "profile-pill" : "auth-pill"}>
           {profile ? (
             <>
               <Avatar name={profile.username} avatar={profile.avatar} avatarKind={profile.avatarKind} size="sm" />
               <span>{profile.username}</span>
+              <button onClick={signOut} type="button">
+                <LogOut size={16} />
+                Sign out
+              </button>
             </>
           ) : (
             <>
-              <UserRound size={18} />
-              <span>Guest learner</span>
+              <button
+                className={authMode === "login" ? "active" : ""}
+                onClick={() => {
+                  setAuthMode("login");
+                  setAuthMessage("");
+                }}
+                type="button"
+              >
+                <LogIn size={16} />
+                Log in
+              </button>
+              <button
+                className={authMode === "create" ? "active" : ""}
+                onClick={() => {
+                  setAuthMode("create");
+                  setAuthMessage("");
+                }}
+                type="button"
+              >
+                <UserPlus size={16} />
+                Create account
+              </button>
             </>
           )}
         </div>
@@ -1426,68 +1531,129 @@ export default function App() {
       {!profile && (
         <section className="login-panel">
           <div className="login-copy">
-            <p className="eyebrow">Learner profile</p>
-            <h1>Build evidence, practise delivery and keep momentum.</h1>
+            <p className="eyebrow">Account access</p>
+            <h1>Log in or create your learner account.</h1>
             <p>
-              Create a learner profile to save roadmap progress, sandbox runs, community feedback and study scores on this device.
+              Save roadmap progress, sandbox runs, community feedback and study scores to a private profile on this device.
             </p>
           </div>
           <div className="login-form">
+            <div className="auth-switch" aria-label="Account mode">
+              <button
+                className={authMode === "login" ? "active" : ""}
+                onClick={() => {
+                  setAuthMode("login");
+                  setAuthMessage("");
+                }}
+                type="button"
+              >
+                <LogIn size={17} />
+                Log in
+              </button>
+              <button
+                className={authMode === "create" ? "active" : ""}
+                onClick={() => {
+                  setAuthMode("create");
+                  setAuthMessage("");
+                }}
+                type="button"
+              >
+                <UserPlus size={17} />
+                Create account
+              </button>
+            </div>
             <label>
               Username
               <input
+                autoComplete="username"
+                placeholder="Enter your username"
                 value={profileDraft.username}
                 onChange={(event) => setProfileDraft((current) => ({ ...current, username: event.target.value }))}
               />
             </label>
-            <label>
-              Role path
-              <select
-                value={profileDraft.role}
-                onChange={(event) => setProfileDraft((current) => ({ ...current, role: event.target.value }))}
-              >
-                <option>SAP Developer Learner</option>
-                <option>Integration Suite Learner</option>
-                <option>SAP BTP Associate</option>
-                <option>Process Automation Learner</option>
-                <option>Portfolio Builder</option>
-              </select>
-            </label>
-            <div className="avatar-grid" aria-label="Profile picture presets">
-              {avatarPresets.map((preset) => (
-                <button
-                  className={profileDraft.avatar === preset.value ? "selected" : ""}
-                  key={preset.id}
-                  onClick={() =>
-                    setProfileDraft((current) => ({ ...current, avatar: preset.value, avatarKind: "preset" }))
-                  }
-                  style={{ "--swatch": preset.value } as CSSProperties}
-                  type="button"
+            {authMode === "create" && (
+              <label>
+                Role path
+                <select
+                  value={profileDraft.role}
+                  onChange={(event) => setProfileDraft((current) => ({ ...current, role: event.target.value }))}
                 >
-                  <span />
-                  {preset.label}
-                </button>
-              ))}
-            </div>
-            <label className="file-picker">
-              <Upload size={18} />
-              Upload profile picture
-              <input accept="image/*" onChange={handleAvatarUpload} type="file" />
+                  <option>SAP Developer Learner</option>
+                  <option>Integration Suite Learner</option>
+                  <option>SAP BTP Associate</option>
+                  <option>Process Automation Learner</option>
+                  <option>Portfolio Builder</option>
+                </select>
+              </label>
+            )}
+            <label>
+              Access code
+              <input
+                autoComplete={authMode === "login" ? "current-password" : "new-password"}
+                placeholder="Enter an access code"
+                type="password"
+                value={profileDraft.accessCode}
+                onChange={(event) => setProfileDraft((current) => ({ ...current, accessCode: event.target.value }))}
+              />
             </label>
-            <button className="primary-action" onClick={saveProfile} type="button">
-              <BadgeCheck size={18} />
-              Enter accelerator
+            {authMode === "create" && (
+              <>
+                <label>
+                  Confirm access code
+                  <input
+                    autoComplete="new-password"
+                    placeholder="Re-enter your access code"
+                    type="password"
+                    value={profileDraft.confirmCode}
+                    onChange={(event) => setProfileDraft((current) => ({ ...current, confirmCode: event.target.value }))}
+                  />
+                </label>
+                <div className="avatar-grid" aria-label="Profile picture presets">
+                  {avatarPresets.map((preset) => (
+                    <button
+                      className={profileDraft.avatar === preset.value ? "selected" : ""}
+                      key={preset.id}
+                      onClick={() =>
+                        setProfileDraft((current) => ({ ...current, avatar: preset.value, avatarKind: "preset" }))
+                      }
+                      style={{ "--swatch": preset.value } as CSSProperties}
+                      type="button"
+                    >
+                      <span />
+                      {preset.label}
+                    </button>
+                  ))}
+                </div>
+                <label className="file-picker">
+                  <Upload size={18} />
+                  Upload profile picture
+                  <input accept="image/*" onChange={handleAvatarUpload} type="file" />
+                </label>
+              </>
+            )}
+            {authMessage && <p className="auth-message">{authMessage}</p>}
+            {authMode === "login" && accounts.length === 0 && (
+              <p className="auth-note">No accounts saved on this device yet. Create an account to begin.</p>
+            )}
+            <button
+              className="primary-action"
+              onClick={authMode === "login" ? loginAccount : createAccount}
+              type="button"
+            >
+              {authMode === "login" ? <LogIn size={18} /> : <BadgeCheck size={18} />}
+              {authMode === "login" ? "Log in" : "Create account"}
             </button>
           </div>
         </section>
       )}
 
+      {profile && (
       <main>
         {activeTab === "dashboard" && (
           <section className="page-grid dashboard-grid">
             <div className="hero-panel">
               <div className="hero-text">
-                <p className="eyebrow">Prepared for Simone Govender</p>
+                <p className="eyebrow">Learner evidence hub</p>
                 <h1>SAP certificate to workplace-ready evidence.</h1>
                 <p>
                   A ten-week operating room for discovery, integration design, delivery evidence, portfolio packaging and confident learner support.
@@ -2282,10 +2448,13 @@ export default function App() {
           </section>
         )}
       </main>
+      )}
 
-      <button className="accelerate-button" onClick={startSprint} type="button" aria-label="Accelerate sprint">
-        <Zap size={30} fill="currentColor" />
-      </button>
+      {profile && (
+        <button className="accelerate-button" onClick={startSprint} type="button" aria-label="Accelerate sprint">
+          <Zap size={30} fill="currentColor" />
+        </button>
+      )}
 
       <footer>
         <span>Quantum Cupcake Creations capstone lab</span>
