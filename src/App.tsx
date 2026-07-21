@@ -1468,8 +1468,8 @@ export default function App() {
         >
           <img src={`${baseUrl}qcc-quantum-cupcake.png`} alt="Quantum Cupcake Creations mark" />
           <span>
-            <strong>SAP Experience Accelerator</strong>
-            <small>Umuzi learner hub</small>
+            <strong>SAPling Studio</strong>
+            <small>A cosy build-home for future SAP pros</small>
           </span>
         </button>
         <nav className="nav-tabs" aria-label="Primary navigation">

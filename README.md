@@ -1,4 +1,4 @@
-# SAP Experience Accelerator
+# SAPling Studio
 
 Interactive learner hub for the Umuzi SAP Developer Experience Accelerator.
 
