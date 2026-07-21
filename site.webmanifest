@@ -1,6 +1,6 @@
 {
-  "name": "SAP Experience Accelerator",
-  "short_name": "SAP Accelerator",
+  "name": "SAPling Studio",
+  "short_name": "SAPling",
   "start_url": "./",
   "display": "standalone",
   "background_color": "#fbf8f0",
